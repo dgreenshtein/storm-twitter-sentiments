@@ -62,7 +62,7 @@ public class TwitterSpout extends BaseRichSpout {
 
         FilterQuery tweetFilterQuery = new FilterQuery();
         // take english tweets only
-        tweetFilterQuery.language(new String[]{"en"});
+        tweetFilterQuery.language("en");
 
         TwitterStreamFactory factory = new TwitterStreamFactory();
         twitterStream = factory.getInstance();

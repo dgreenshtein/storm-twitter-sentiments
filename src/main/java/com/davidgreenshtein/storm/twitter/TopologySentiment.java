@@ -32,8 +32,8 @@ import static org.apache.storm.topology.base.BaseWindowedBolt.Count;
  */
 public class TopologySentiment {
 
-    static final String TOPOLOGY_NAME = "storm-twitter-sentiment-words";
-    static final String HDFS_BOLT_PROPERTIES = "hdfs.bolt.properties";
+    private static final String TOPOLOGY_NAME = "storm-twitter-sentiment-words";
+    private static final String HDFS_BOLT_PROPERTIES = "hdfs.bolt.properties";
 
     public static void main(String[] args) throws InvalidTopologyException, AuthorizationException, AlreadyAliveException {
 
@@ -47,10 +47,10 @@ public class TopologySentiment {
 
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("TwitterSpout", new TwitterSpout(), 1);
-        builder.setBolt("SentimentDiscoveryBolt", new SentimentDiscoveryBolt(),5).shuffleGrouping("TwitterSpout");
+        builder.setBolt("SentimentDiscoveryBolt", new SentimentDiscoveryBolt(), 5).shuffleGrouping("TwitterSpout");
         builder.setBolt("WordSplitterBolt", new WordSplitterBolt(4),1).shuffleGrouping("SentimentDiscoveryBolt");
         builder.setBolt("IgnoreWordsBolt", new IgnoreWordsBolt(),1).shuffleGrouping("WordSplitterBolt");
-        builder.setBolt("SlidingWindowWordsCounterBolt", new SlidingWindowWordsCounterBolt().withWindow(Count.of(400), Count.of(50)), 1)
+        builder.setBolt("SlidingWindowWordsCounterBolt", new SlidingWindowWordsCounterBolt().withWindow(new Count(400), new Count(50)), 1)
                .shuffleGrouping("IgnoreWordsBolt");
         builder.setBolt("HdfsBolt", initHdfBolt(fsUrl, fsOutputPath, hadoopUser),1).shuffleGrouping("SlidingWindowWordsCounterBolt");
 
@@ -70,9 +70,10 @@ public class TopologySentiment {
     }
 
 
-    private static Config prepareConfig(){
+    private static Map prepareConfig(){
         Config config = new Config();
         config.setMessageTimeoutSecs(120);
+        config.setNumWorkers(3);
         Map<String, String>  hdfsBoltConfigs = new HashMap<>();
         hdfsBoltConfigs.put("dfs.client.use.datanode.hostname", "true");
         config.put(HDFS_BOLT_PROPERTIES, hdfsBoltConfigs);
@@ -96,15 +97,13 @@ public class TopologySentiment {
                 .withExtension(".plain")
                 .withPath(fsOutputPath);
 
-        HdfsBolt bolt = new HdfsBolt()
+        return new HdfsBolt()
                 .withFsUrl(fsUrl)
                 .withFileNameFormat(fileNameFormat)
                 .withRecordFormat(format)
                 .withRotationPolicy(rotationPolicy)
                 .withSyncPolicy(syncPolicy)
                 .withConfigKey(HDFS_BOLT_PROPERTIES);
-
-        return bolt;
     }
 
 }

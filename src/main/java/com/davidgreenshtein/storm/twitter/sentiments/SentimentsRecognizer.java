@@ -6,32 +6,15 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 /**
  * Created by davidgreenshtein on 22.03.17.
  */
-public class SentimentsRecognizer {
+public class SentimentsRecognizer implements ISentimentsRecognizer {
 
-    private StanfordCoreNLP tokenizer;
-    private StanfordCoreNLP pipeline;
-
-    enum Output {
-        PENNTREES, VECTORS, ROOT, PROBABILITIES
-    }
-
-    enum Input {
-        TEXT, TREES
-    }
-
-    private List<Output> outputFormats = Collections.singletonList(Output.ROOT);
-    private Input inputFormat = Input.TEXT;
-
-    private static final NumberFormat NF = new DecimalFormat("0.0000");
+    private final StanfordCoreNLP tokenizer;
+    private final StanfordCoreNLP pipeline;
 
     public SentimentsRecognizer(){
         Properties tokenizerProps = new Properties();
@@ -42,11 +25,12 @@ public class SentimentsRecognizer {
         pipelineProps.setProperty("enforceRequirements", "false");
         tokenizerProps.setProperty("annotators", "tokenize, ssplit");
 
-        tokenizer = (tokenizerProps == null) ? null : new StanfordCoreNLP(tokenizerProps);
+        tokenizer = new StanfordCoreNLP(tokenizerProps);
         pipeline = new StanfordCoreNLP(pipelineProps);
     }
 
 
+    @Override
     public String discoverSentiment(String line) {
 
         Annotation annotation = this.tokenizer.process(line);

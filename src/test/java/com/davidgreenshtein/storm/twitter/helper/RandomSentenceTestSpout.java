@@ -1,4 +1,4 @@
-package com.davidgreenshtein.storm.twitter;
+package com.davidgreenshtein.storm.twitter.helper;
 
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -19,8 +19,8 @@ import java.util.Random;
  */
 public class RandomSentenceTestSpout extends BaseRichSpout {
     public static Logger LOG = LoggerFactory.getLogger(RandomSentenceTestSpout.class);
-    boolean _isDistributed;
-    SpoutOutputCollector _collector;
+    private boolean _isDistributed;
+    private SpoutOutputCollector _collector;
 
     public RandomSentenceTestSpout() {
         this(true);
@@ -30,35 +30,42 @@ public class RandomSentenceTestSpout extends BaseRichSpout {
         this._isDistributed = isDistributed;
     }
 
+    @Override
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
         this._collector = collector;
     }
 
+    @Override
     public void close() {
     }
 
+    @Override
     public void nextTuple() {
         Utils.sleep(100L);
         String[] words = new String[]{"there is a greate weather today", "do you have a nice mood?", "spring is coming"};
         Random rand = new Random();
         String word = words[rand.nextInt(words.length)];
-        this._collector.emit(new Values(new Object[]{word}));
+        this._collector.emit(new Values(word));
     }
 
+    @Override
     public void ack(Object msgId) {
     }
 
+    @Override
     public void fail(Object msgId) {
     }
 
+    @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields(new String[]{"tweet"}));
+        declarer.declare(new Fields("tweet"));
     }
 
+    @Override
     public Map<String, Object> getComponentConfiguration() {
         if(!this._isDistributed) {
-            HashMap ret = new HashMap();
-            ret.put("topology.max.task.parallelism", Integer.valueOf(1));
+            Map<String, Object> ret = new HashMap();
+            ret.put("topology.max.task.parallelism", 1);
             return ret;
         } else {
             return null;

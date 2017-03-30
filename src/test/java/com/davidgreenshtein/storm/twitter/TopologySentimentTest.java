@@ -3,6 +3,7 @@ package com.davidgreenshtein.storm.twitter;
 import com.davidgreenshtein.storm.twitter.bolts.IgnoreWordsBolt;
 import com.davidgreenshtein.storm.twitter.bolts.SentimentDiscoveryBolt;
 import com.davidgreenshtein.storm.twitter.bolts.WordSplitterBolt;
+import com.davidgreenshtein.storm.twitter.helper.RandomSentenceTestSpout;
 import org.apache.storm.Config;
 import org.apache.storm.ILocalCluster;
 import org.apache.storm.Testing;

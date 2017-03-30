@@ -10,7 +10,7 @@
 
     <properties>
         <twitter.version>4.0.6</twitter.version>
-        <storm.version>1.0.3</storm.version>
+        <storm.version>1.0.1</storm.version>
         <storm.hdfs.version>1.0.3</storm.hdfs.version>
         <junit.version>4.12</junit.version>
         <hadoop.version>2.2.0</hadoop.version>
@@ -31,6 +31,7 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
             <version>${storm.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
@@ -86,6 +87,14 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-hdfs</artifactId>
             <version>${storm.hdfs.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
@@ -96,8 +105,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -119,7 +128,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass></mainClass>
+                                    <mainClass>com.davidgreenshtein.storm.twitter.TopologySentiment</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -135,6 +144,10 @@
         <repository>
             <id>clojars</id>
             <url>http://clojars.org/repo/</url>
+        </repository>
+        <repository>
+            <id>storm</id>
+            <url>https://mvnrepository.com/artifact/org.apache.storm/storm-core</url>
         </repository>
     </repositories>
 </project>

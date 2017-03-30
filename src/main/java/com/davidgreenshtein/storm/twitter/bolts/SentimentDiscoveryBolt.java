@@ -1,5 +1,6 @@
 package com.davidgreenshtein.storm.twitter.bolts;
 
+import com.davidgreenshtein.storm.twitter.sentiments.ISentimentsRecognizer;
 import com.davidgreenshtein.storm.twitter.sentiments.SentimentsRecognizer;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 public class SentimentDiscoveryBolt extends BaseBasicBolt {
 
-    private SentimentsRecognizer sentimentsRecognizer;
+    private ISentimentsRecognizer sentimentsRecognizer;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
@@ -32,9 +33,9 @@ public class SentimentDiscoveryBolt extends BaseBasicBolt {
     public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
 
         String tweet = (String) tuple.getValueByField("tweet");
-        String line = tweet.replaceAll("\\p{Punct}", " ").replaceAll("\\r|\\n", "").toLowerCase();
+        String line = (tweet != null) ? tweet.replaceAll("\\p{Punct}", " ").replaceAll("\\r|\\n", "").toLowerCase() : null;
 
-        if ( ! line.isEmpty()) {
+        if (line != null && ! line.isEmpty()) {
             String sentiment = sentimentsRecognizer.discoverSentiment(line);
 
             // continue with positive sentences only
