@@ -4,6 +4,7 @@ import com.davidgreenshtein.storm.twitter.bolts.IgnoreWordsBolt;
 import com.davidgreenshtein.storm.twitter.bolts.SentimentDiscoveryBolt;
 import com.davidgreenshtein.storm.twitter.bolts.SlidingWindowWordsCounterBolt;
 import com.davidgreenshtein.storm.twitter.bolts.WordSplitterBolt;
+import com.davidgreenshtein.storm.twitter.config.PropertiesNames;
 import com.davidgreenshtein.storm.twitter.spout.TwitterSpout;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
@@ -22,9 +23,14 @@ import org.apache.storm.hdfs.bolt.rotation.FileSizeRotationPolicy;
 import org.apache.storm.hdfs.bolt.sync.CountSyncPolicy;
 import org.apache.storm.hdfs.bolt.sync.SyncPolicy;
 import org.apache.storm.topology.TopologyBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.apache.storm.topology.base.BaseWindowedBolt.Count;
 /**
@@ -34,11 +40,12 @@ public class TopologySentiment {
 
     private static final String TOPOLOGY_NAME = "storm-twitter-sentiment-words";
     private static final String HDFS_BOLT_PROPERTIES = "hdfs.bolt.properties";
+    private static final Logger LOG = LoggerFactory.getLogger(TopologySentiment.class);
 
-    public static void main(String[] args) throws InvalidTopologyException, AuthorizationException, AlreadyAliveException {
+    public static void main(String[] args) throws InvalidTopologyException, AuthorizationException, AlreadyAliveException, IOException {
 
-        if (args.length != 4){
-            System.out.println("Expected 4 parameters: <fsUrl>, <fsOutputPath>, <hadoopUser>, <local>");
+        if (args.length != 5){
+            System.out.println("Expected 5 parameters: <fsUrl>, <fsOutputPath>, <hadoopUser>, <local>, <config file path>");
             return;
         }
         String fsUrl = args[0];
@@ -56,7 +63,7 @@ public class TopologySentiment {
 
         if ("local".equals(args[3])){
             final LocalCluster cluster = new LocalCluster();
-            cluster.submitTopology(TOPOLOGY_NAME, prepareConfig(), builder.createTopology());
+            cluster.submitTopology(TOPOLOGY_NAME, prepareConfig(args[4]), builder.createTopology());
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
@@ -65,13 +72,26 @@ public class TopologySentiment {
                 }
             });
         } else {
-            StormSubmitter.submitTopologyWithProgressBar(TOPOLOGY_NAME, prepareConfig(), builder.createTopology());
+            StormSubmitter.submitTopologyWithProgressBar(TOPOLOGY_NAME,prepareConfig(args[4]), builder.createTopology());
         }
     }
 
+    private static Map prepareConfig(String configFilePath) throws IOException{
 
-    private static Map prepareConfig(){
         Config config = new Config();
+        Properties prop = new Properties();
+        InputStream input = TopologySentiment.class.getClassLoader().getResourceAsStream(configFilePath);
+
+        if(input==null){
+            LOG.error("Enable to read properties file from path:{}", configFilePath);
+        } else {
+            prop.load(input);
+            config.put(PropertiesNames.TWITTER_CONSUMER_KEY, prop.getProperty(PropertiesNames.TWITTER_CONSUMER_KEY));
+            config.put(PropertiesNames.TWITTER_CONSUMER_SECRET, prop.getProperty(PropertiesNames.TWITTER_CONSUMER_SECRET));
+            config.put(PropertiesNames.TWITTER_CONSUMER_TOKEN, prop.getProperty(PropertiesNames.TWITTER_CONSUMER_TOKEN));
+            config.put(PropertiesNames.TWITTER_CONSUMER_TOKEN_SECRET, prop.getProperty(PropertiesNames.TWITTER_CONSUMER_TOKEN_SECRET));
+        }
+
         config.setMessageTimeoutSecs(120);
         config.setNumWorkers(3);
         Map<String, String>  hdfsBoltConfigs = new HashMap<>();
