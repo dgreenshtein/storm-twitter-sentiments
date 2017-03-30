@@ -25,7 +25,6 @@ public class SentimentsDiscoveryBoltTest {
 
     private static final String TEST_COMPONENT_ID = "comp_id";
     private static final String TEST_STREAM_ID = "stream_id";
-    private static final String TUPLE_FIELD_ID = "tweet";
 
     private SentimentDiscoveryBolt bolt;
     private BasicOutputCollector collector;
@@ -43,7 +42,7 @@ public class SentimentsDiscoveryBoltTest {
     public void testPositive(){
         //given
         String sentence = "test very positive tweet";
-        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, sentence);
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, SentimentDiscoveryBolt.FIELD_NAME, sentence);
 
         //when
         bolt.execute(tuple, collector);
@@ -56,7 +55,7 @@ public class SentimentsDiscoveryBoltTest {
     public void testNotPositive(){
         //given
         String sentence = "test very bad tweet";
-        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, sentence);
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, SentimentDiscoveryBolt.FIELD_NAME, sentence);
 
         //when
         bolt.execute(tuple, collector);
@@ -69,7 +68,7 @@ public class SentimentsDiscoveryBoltTest {
     public void testNull(){
         //given
         String sentence = null;
-        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, sentence);
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, SentimentDiscoveryBolt.FIELD_NAME, sentence);
 
         //when
         bolt.execute(tuple, collector);

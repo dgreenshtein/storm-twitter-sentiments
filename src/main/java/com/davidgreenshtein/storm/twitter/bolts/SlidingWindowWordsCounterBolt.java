@@ -25,6 +25,9 @@ import java.util.Map;
  */
 public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
 
+    public static String FIELD_NAME = "word";
+    private static String LOG_DELIMITER = "|";
+
     private OutputCollector collector;
     private static final Logger LOG = LoggerFactory.getLogger(SlidingWindowWordsCounterBolt.class);
 
@@ -42,7 +45,7 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
 
         // extract words in the current window
         for (Tuple tuple:tuplesInWindow) {
-            collectedFields.add((String)tuple.getValueByField("word"));
+            collectedFields.add((String)tuple.getValueByField(FIELD_NAME));
         }
         List<Pair<String, Integer>> top10List = getTopN(collectedFields);
 
@@ -50,7 +53,7 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
 
         // Print results to the log and emit to the next bolt
         for (Pair<String, Integer> pair:top10List) {
-            LOG.info(pair.getLeft()+"|"+pair.getRight());
+            LOG.info(pair.getLeft()+LOG_DELIMITER+pair.getRight());
             collector.emit(new Values(System.currentTimeMillis(), pair.getLeft(), pair.getRight()));
         }
     }

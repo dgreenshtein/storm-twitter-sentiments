@@ -22,6 +22,8 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Created by davidgreenshtein on 23.03.17.
+ *
+ * Integration test using test Spout
  */
 public class TopologySentimentTest {
 

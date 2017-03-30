@@ -26,7 +26,6 @@ public class SlidingWindowWordsCounterBoltTest {
 
     private static final String TEST_COMPONENT_ID = "comp_id";
     private static final String TEST_STREAM_ID = "stream_id";
-    private static final String TUPLE_FIELD_ID = "word";
     private static final int WORD_POSITION = 1;
     private static final int COUNTER_POSITION = 2;
 
@@ -48,7 +47,7 @@ public class SlidingWindowWordsCounterBoltTest {
         //given
         String [] expectedWords = new String[]{"blah", "hey", "yo", "hey"};
 
-        TupleWindow tupleWindow = MockTupleHelper.mockTupleWindow(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, expectedWords);
+        TupleWindow tupleWindow = MockTupleHelper.mockTupleWindow(TEST_COMPONENT_ID, TEST_STREAM_ID, SlidingWindowWordsCounterBolt.FIELD_NAME, expectedWords);
 
         //when
         bolt.execute(tupleWindow);
@@ -65,7 +64,7 @@ public class SlidingWindowWordsCounterBoltTest {
         //given
         String[] expectedWords = new String[]{};
 
-        TupleWindow tupleWindow = MockTupleHelper.mockTupleWindow(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, expectedWords);
+        TupleWindow tupleWindow = MockTupleHelper.mockTupleWindow(TEST_COMPONENT_ID, TEST_STREAM_ID, SlidingWindowWordsCounterBolt.FIELD_NAME, expectedWords);
 
         //when
         bolt.execute(tupleWindow);

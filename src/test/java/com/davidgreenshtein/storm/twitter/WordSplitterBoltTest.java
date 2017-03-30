@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Created by davidgreenshtein on 22.03.17.
@@ -21,7 +22,6 @@ public class WordSplitterBoltTest {
 
     private static final String TEST_COMPONENT_ID = "comp_id";
     private static final String TEST_STREAM_ID = "stream_id";
-    private static final String TUPLE_FIELD_ID = "sentence";
 
     private WordSplitterBolt bolt;
 
@@ -39,7 +39,7 @@ public class WordSplitterBoltTest {
         String sentence = "test sentence";
         String expectedWord1 = "test";
         String expectedWord2 = "sentence";
-        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, sentence);
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, WordSplitterBolt.FIELD_NAME, sentence);
 
         //when
         bolt.execute(tuple, collector);
@@ -47,5 +47,31 @@ public class WordSplitterBoltTest {
         //then
         verify(collector).emit(new Values(expectedWord1));
         verify(collector).emit(new Values(expectedWord2));
+    }
+
+    @Test
+    public void emptySentenceShouldSucced(){
+        //given
+        String sentence = "";
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, WordSplitterBolt.FIELD_NAME, sentence);
+
+        //when
+        bolt.execute(tuple, collector);
+
+        //then
+        verifyZeroInteractions(collector);
+    }
+
+    @Test
+    public void nullSentenceShouldSucced(){
+        //given
+        String sentence = null;
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, WordSplitterBolt.FIELD_NAME, sentence);
+
+        //when
+        bolt.execute(tuple, collector);
+
+        //then
+        verifyZeroInteractions(collector);
     }
 }

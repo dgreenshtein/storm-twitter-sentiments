@@ -19,7 +19,6 @@ public class IgnoreWordsBoltTest {
 
     private static final String TEST_COMPONENT_ID = "comp_id";
     private static final String TEST_STREAM_ID = "stream_id";
-    private static final String TUPLE_FIELD_ID = "word";
 
     private IgnoreWordsBolt bolt;
     private BasicOutputCollector collector;
@@ -35,7 +34,7 @@ public class IgnoreWordsBoltTest {
         //given
         String expectedWord = "test_word";
 
-        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, expectedWord);
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, IgnoreWordsBolt.FIELD_NAME, expectedWord);
 
         //when
         bolt.execute(tuple, collector);
@@ -48,7 +47,7 @@ public class IgnoreWordsBoltTest {
     public void filterWordInTheList(){
         //given
         String expectedWord = "from";
-        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, expectedWord);
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, IgnoreWordsBolt.FIELD_NAME, expectedWord);
 
         //when
         bolt.execute(tuple, collector);
@@ -61,7 +60,7 @@ public class IgnoreWordsBoltTest {
     public void nullWordShouldSucceed(){
         //given
         String expectedWord = null;
-        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, TUPLE_FIELD_ID, expectedWord);
+        Tuple tuple = MockTupleHelper.mockTuple(TEST_COMPONENT_ID, TEST_STREAM_ID, IgnoreWordsBolt.FIELD_NAME, expectedWord);
 
         //when
         bolt.execute(tuple, collector);

@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Created by davidgreenshtein on 22.03.17.
  */
-public class SentimentsRecognizer implements ISentimentsRecognizer {
+public class SentimentsRecognizer {
 
     private final StanfordCoreNLP tokenizer;
     private final StanfordCoreNLP pipeline;
@@ -30,7 +30,6 @@ public class SentimentsRecognizer implements ISentimentsRecognizer {
     }
 
 
-    @Override
     public String discoverSentiment(String line) {
 
         Annotation annotation = this.tokenizer.process(line);

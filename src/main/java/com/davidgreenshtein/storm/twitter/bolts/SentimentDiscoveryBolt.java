@@ -1,6 +1,5 @@
 package com.davidgreenshtein.storm.twitter.bolts;
 
-import com.davidgreenshtein.storm.twitter.sentiments.ISentimentsRecognizer;
 import com.davidgreenshtein.storm.twitter.sentiments.SentimentsRecognizer;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
@@ -17,7 +16,10 @@ import java.util.Map;
  */
 public class SentimentDiscoveryBolt extends BaseBasicBolt {
 
-    private ISentimentsRecognizer sentimentsRecognizer;
+    public static String FIELD_NAME = "tweet";
+    public static String OUTPUT_FIELD_NAME = "sentence";
+
+    private SentimentsRecognizer sentimentsRecognizer;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
@@ -26,13 +28,13 @@ public class SentimentDiscoveryBolt extends BaseBasicBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("sentence"));
+        outputFieldsDeclarer.declare(new Fields(OUTPUT_FIELD_NAME));
     }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
 
-        String tweet = (String) tuple.getValueByField("tweet");
+        String tweet = (String) tuple.getValueByField(FIELD_NAME);
         String line = (tweet != null) ? tweet.replaceAll("\\p{Punct}", " ").replaceAll("\\r|\\n", "").toLowerCase() : null;
 
         if (line != null && ! line.isEmpty()) {

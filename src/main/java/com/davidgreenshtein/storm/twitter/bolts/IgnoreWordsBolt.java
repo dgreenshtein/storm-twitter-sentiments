@@ -16,6 +16,8 @@ import java.util.HashSet;
  */
 public class IgnoreWordsBolt extends BaseBasicBolt {
 
+    public static String FIELD_NAME = "word";
+
     private final Collection<String> IGNORE_LIST = new HashSet<>(Arrays.asList(new String[]{
             "http", "https", "the", "you", "que", "and", "for", "that", "like", "have", "this", "just", "with", "all", "get",
             "about", "can", "was", "not", "your", "but", "are", "one", "what", "out", "when", "get", "lol", "now", "para", "por",
@@ -24,12 +26,12 @@ public class IgnoreWordsBolt extends BaseBasicBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("word"));
+        declarer.declare(new Fields(FIELD_NAME));
     }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
-        String word = (String) tuple.getValueByField("word");
+        String word = (String) tuple.getValueByField(FIELD_NAME);
         if (!IGNORE_LIST.contains(word) && word != null) {
             basicOutputCollector.emit(new Values(word));
         }

@@ -12,6 +12,10 @@ import org.apache.storm.tuple.Values;
  */
 public class WordSplitterBolt extends BaseBasicBolt {
 
+    public static String FIELD_NAME = "sentence";
+    public static String OUTPUT_FIELD_NAME = "word";
+    private static String SPLIT_BY = " ";
+
     private final int minWordLength;
 
     public WordSplitterBolt(int minWordLength) {
@@ -20,13 +24,13 @@ public class WordSplitterBolt extends BaseBasicBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("word"));
+        declarer.declare(new Fields(OUTPUT_FIELD_NAME));
     }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
-        String tweetText = (String) tuple.getValueByField("sentence");
-        String[] words = tweetText.split(" ");
+        String tweetText = (String) tuple.getValueByField(FIELD_NAME);
+        String[] words = (tweetText != null) ? tweetText.split(SPLIT_BY) : new String[0];
         for (String word : words) {
             if (word.length() >= minWordLength) {
                 basicOutputCollector.emit(new Values(word));
