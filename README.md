@@ -20,3 +20,14 @@ mvn exec:java -Dexec.mainClass="com.davidgreenshtein.storm.twitter.TopologySenti
               -Dtwitter4j.oauth.accessTokenSecret=***
               -Dexec.args="hdfs://[namenode host name]:8020 [hdfs output path] [hdfs user name] local"
 ```
+
+# How to run on cluster
+```
+storm jar twitter-sentiments-1.0-SNAPSHOT.jar \
+ com.davidgreenshtein.storm.twitter.TopologySentiment \
+ hdfs://[namenode host name]:8020 \
+ [hdfs output path] \
+ [hdfs user name] \
+ distributed \
+ [properties file location path]
+```
