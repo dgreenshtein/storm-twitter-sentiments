@@ -1,5 +1,6 @@
 package com.davidgreenshtein.storm.twitter.bolts;
 
+import com.davidgreenshtein.storm.twitter.config.PropertiesHandler;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,6 +28,7 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
 
     public static String FIELD_NAME = "word";
     private static String LOG_DELIMITER = "|";
+    private Integer TOP_N;
 
     private OutputCollector collector;
     private static final Logger LOG = LoggerFactory.getLogger(SlidingWindowWordsCounterBolt.class);
@@ -34,6 +36,7 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
+        this.TOP_N = (Integer) stormConf.getOrDefault(PropertiesHandler.TOP_N_NUMBER, 10);
     }
 
     @Override
@@ -49,7 +52,7 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
         }
         List<Pair<String, Integer>> top10List = getTopN(collectedFields);
 
-        LOG.info("--->Top 10 positive words out of number of words in window interval: " + tuplesInWindow.size());
+        LOG.info("--->Top {} positive words out of number of words in window interval: {}", TOP_N, tuplesInWindow.size());
 
         // Print results to the log and emit to the next bolt
         for (Pair<String, Integer> pair:top10List) {
@@ -75,11 +78,11 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
 
         Collections.sort(wordTuple, new PairComparator());
 
-        List<Pair<String, Integer>> top10List = null;
-        if (wordTuple.size()<10){
+        List<Pair<String, Integer>> top10List;
+        if (wordTuple.size()<TOP_N){
             top10List = wordTuple;
         } else {
-            top10List = wordTuple.subList(0, 10);
+            top10List = wordTuple.subList(0, TOP_N);
         }
         return top10List;
     }
