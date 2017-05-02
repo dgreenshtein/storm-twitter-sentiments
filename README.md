@@ -1,5 +1,6 @@
 # storm-twitter-sentiments
 [![Build Status](https://travis-ci.org/dgreenshtein/storm-twitter-sentiments.svg?branch=master)](https://travis-ci.org/dgreenshtein/storm-twitter-sentiments)
+[![codecov](https://codecov.io/gh/dgreenshtein/storm-twitter-sentiments/branch/master/graph/badge.svg)](https://codecov.io/gh/dgreenshtein/storm-twitter-sentiments)
 
 Positive tweets words trending with storm
 
