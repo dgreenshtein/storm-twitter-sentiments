@@ -1,4 +1,6 @@
 # storm-twitter-sentiments
+[![Build Status](https://travis-ci.org/dgreenshtein/storm-twitter-sentiments.svg?branch=master)](https://travis-ci.org/dgreenshtein/storm-twitter-sentiments)
+
 Positive tweets words trending with storm
 
 This project is a prototype intergating Twitter with Storm and HDFS
