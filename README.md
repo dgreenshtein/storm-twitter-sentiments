@@ -1,18 +1,18 @@
-# storm-twitter-sentiments
+# Twitter sentiments real time analyzer
 [![Build Status](https://travis-ci.org/dgreenshtein/storm-twitter-sentiments.svg?branch=master)](https://travis-ci.org/dgreenshtein/storm-twitter-sentiments)
 [![codecov](https://codecov.io/gh/dgreenshtein/storm-twitter-sentiments/branch/master/graph/badge.svg)](https://codecov.io/gh/dgreenshtein/storm-twitter-sentiments)
 
-Positive tweets words trending with storm
+Positive tweets words trending with Apache Storm
 
-This project is a prototype intergating Twitter with Storm and HDFS
+This project is a prototype integrating Twitter with Storm and HDFS
 
 Storm topology business logic
-* analyze in real time stream of tweets written in English
+* analyze in real-time stream of tweets written in English
 * find positive tweets
-* define words trending in predefinned window interval
+* define words trending in predefined window interval
 * writing results to HDFS
 
-For tweets sentimental analisys I used https://nlp.stanford.edu/software/ open source library
+For tweets sentimental analysis I used https://nlp.stanford.edu/software/ open source library
 
 # How to run with maven
 ```
