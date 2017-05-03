@@ -1,6 +1,6 @@
 package com.davidgreenshtein.storm.twitter.spout;
 
-import com.davidgreenshtein.storm.twitter.config.PropertiesNames;
+import com.davidgreenshtein.storm.twitter.config.PropertiesHandler;
 import org.apache.storm.Config;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -34,9 +34,9 @@ public class TwitterSpout extends BaseRichSpout {
     @Override
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
 
-        Configuration configuration = configurePermissions(conf);
+        Configuration configuration = configureConnectionParameters(conf);
 
-        queue = new LinkedBlockingQueue<Status>(1000);
+        queue = new LinkedBlockingQueue<>(1000);
         this.collector = collector;
 
         StatusListener listener = new StatusListener() {
@@ -109,18 +109,19 @@ public class TwitterSpout extends BaseRichSpout {
         declarer.declare(new Fields("tweet"));
     }
 
-    private Configuration configurePermissions(Map m){
+    private Configuration configureConnectionParameters(Map m){
 
-        if(m.get(PropertiesNames.TWITTER_CONSUMER_KEY) != null
-            && m.get(PropertiesNames.TWITTER_CONSUMER_SECRET) != null
-                && m.get(PropertiesNames.TWITTER_CONSUMER_TOKEN) != null
-                && m.get(PropertiesNames.TWITTER_CONSUMER_TOKEN_SECRET) != null){
+        // take connection parameters from configuration first, if not configured, use from program arguments
+        if(m.get(PropertiesHandler.TWITTER_CONSUMER_KEY) != null
+            && m.get(PropertiesHandler.TWITTER_CONSUMER_SECRET) != null
+                && m.get(PropertiesHandler.TWITTER_CONSUMER_TOKEN) != null
+                && m.get(PropertiesHandler.TWITTER_CONSUMER_TOKEN_SECRET) != null){
 
             return new ConfigurationBuilder()
-                    .setOAuthConsumerKey((String)m.get(PropertiesNames.TWITTER_CONSUMER_KEY))
-                    .setOAuthConsumerSecret((String)m.get(PropertiesNames.TWITTER_CONSUMER_SECRET))
-                    .setOAuthAccessToken((String)m.get(PropertiesNames.TWITTER_CONSUMER_TOKEN))
-                    .setOAuthAccessTokenSecret((String)m.get(PropertiesNames.TWITTER_CONSUMER_TOKEN_SECRET))
+                    .setOAuthConsumerKey((String)m.get(PropertiesHandler.TWITTER_CONSUMER_KEY))
+                    .setOAuthConsumerSecret((String)m.get(PropertiesHandler.TWITTER_CONSUMER_SECRET))
+                    .setOAuthAccessToken((String)m.get(PropertiesHandler.TWITTER_CONSUMER_TOKEN))
+                    .setOAuthAccessTokenSecret((String)m.get(PropertiesHandler.TWITTER_CONSUMER_TOKEN_SECRET))
                     .build();
         }
 
