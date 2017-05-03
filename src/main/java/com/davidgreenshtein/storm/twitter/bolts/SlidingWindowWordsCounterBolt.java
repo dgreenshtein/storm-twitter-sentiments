@@ -15,11 +15,13 @@ import org.apache.storm.windowing.TupleWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by davidgreenshtein on 22.03.17.
@@ -28,6 +30,7 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
 
     public static String FIELD_NAME = "word";
     private static String LOG_DELIMITER = "|";
+    private static Integer TOP_N_DEFAULT=10;
     private Integer TOP_N;
 
     private OutputCollector collector;
@@ -36,29 +39,27 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
-        this.TOP_N = (Integer) stormConf.getOrDefault(PropertiesHandler.TOP_N_NUMBER, 10);
+        this.TOP_N = (Integer) stormConf.getOrDefault(PropertiesHandler.TOP_N_NUMBER, TOP_N_DEFAULT);
     }
 
     @Override
     public void execute(TupleWindow tupleWindow) {
 
-        List<String> collectedFields = new ArrayList<>();
-
         List<Tuple> tuplesInWindow = tupleWindow.get();
 
         // extract words in the current window
-        for (Tuple tuple:tuplesInWindow) {
-            collectedFields.add((String)tuple.getValueByField(FIELD_NAME));
-        }
-        List<Pair<String, Integer>> top10List = getTopN(collectedFields);
+        List<String> collectedFields = tuplesInWindow.stream()
+                                                     .map(tuple -> (String)tuple.getValueByField(FIELD_NAME))
+                                                     .collect(Collectors.toList());
+        List<Pair<String, Integer>> topNList = getTopN(collectedFields);
 
-        LOG.info("--->Top {} positive words out of number of words in window interval: {}", TOP_N, tuplesInWindow.size());
+        LOG.info("Top {} positive words out of number of words in window interval: {}", TOP_N, tuplesInWindow.size());
 
         // Print results to the log and emit to the next bolt
-        for (Pair<String, Integer> pair:top10List) {
+        topNList.stream().forEach(pair-> {
             LOG.info(pair.getLeft()+LOG_DELIMITER+pair.getRight());
             collector.emit(new Values(System.currentTimeMillis(), pair.getLeft(), pair.getRight()));
-        }
+        });
     }
 
     /**
@@ -72,9 +73,9 @@ public class SlidingWindowWordsCounterBolt extends BaseWindowedBolt {
 
         Multiset<String> multiset = HashMultiset.create(collectedFields);
 
-        for (Multiset.Entry s:multiset.entrySet()) {
-            wordTuple.add(Pair.of((String)s.getElement(), s.getCount()));
-        }
+        multiset.entrySet().stream().forEach(s-> {
+            wordTuple.add(Pair.of(s.getElement(), s.getCount()));
+        });
 
         Collections.sort(wordTuple, new PairComparator());
 

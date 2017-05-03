@@ -47,6 +47,7 @@ public class TopologySentiment implements Closeable {
     private static final int HADOOP_USER = 2;
     private static final int CONFIG_PATH = 4;
     private static final int IS_LOCAL_MODE = 3;
+
     private PropertiesHandler propertiesHandler;
     private TopologyBuilder builder;
 
@@ -64,7 +65,7 @@ public class TopologySentiment implements Closeable {
         }
     }
 
-    private void init(String[] args) throws IOException {
+    public void init(String[] args) throws IOException {
         if (args.length != 5) {
             System.out.println("Expected 5 parameters: <fsUrl>, <fsOutputPath>, <hadoopUser>, <local>, <config file path>");
             return;
@@ -174,5 +175,18 @@ public class TopologySentiment implements Closeable {
     @Override
     public void close() throws IOException {
 
+    }
+
+    public TopologyBuilder getBuilder() {
+        return builder;
+    }
+
+    public void setPropertiesHandler(PropertiesHandler propertiesHandler) {
+        this.propertiesHandler = propertiesHandler;
+    }
+
+
+    public PropertiesHandler getPropertiesHandler() {
+        return propertiesHandler;
     }
 }
