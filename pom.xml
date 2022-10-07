@@ -15,7 +15,7 @@
         <junit.version>4.12</junit.version>
         <hadoop.version>2.7.3</hadoop.version>
         <mockito.version>1.10.19</mockito.version>
-        <stanford.version>3.7.0</stanford.version>
+        <stanford.version>4.4.0</stanford.version>
         <guava.version>21.0</guava.version>
         <clojure.version>1.7.0</clojure.version>
         <power.mock.version>1.6.5</power.mock.version>
