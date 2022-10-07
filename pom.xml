@@ -12,7 +12,7 @@
         <twitter.version>4.0.6</twitter.version>
         <storm.version>1.0.1</storm.version>
         <storm.hdfs.version>1.0.1</storm.hdfs.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <hadoop.version>2.7.3</hadoop.version>
         <mockito.version>1.10.19</mockito.version>
         <stanford.version>3.7.0</stanford.version>
